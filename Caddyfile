@@ -1,0 +1,32 @@
+{
+	admin off
+}
+
+(static) {
+      handle_path /static/* {
+        root * /www/html
+        file_server
+    }
+}
+
+(api) {
+    reverse_proxy api:5000 
+}
+
+(web) {
+    reverse_proxy web:3000
+}
+
+:80, :443 {
+    import web
+    import static
+    tls internal
+}
+
+
+api.localhost:80, api.localhost:443 {
+    import api
+    import static
+    tls internal
+}
+

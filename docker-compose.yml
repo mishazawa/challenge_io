@@ -1,0 +1,70 @@
+services:
+  api: &django
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    # command: uvicorn challenge_io.asgi:application --reload --proxy-headers --host 0.0.0.0 --port ${PORT} #dev
+    command: uvicorn challenge_io.asgi:application --proxy-headers --host 0.0.0.0 --port ${PORT}
+    container_name: api
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DJANGO_STATIC_ROOT: ${DJANGO_STATIC_ROOT}
+      DEBUG: ${DEBUG}
+    volumes: # remove in production
+      - ./api:/app/api
+      - ./challenge_io:/app/challenge_io
+      - ./db.sqlite3:/app/db.sqlite3
+      - ./manage.py:/app/manage.py
+      - django-static:/var/www
+    depends_on:
+      - migration
+      - collectstatic
+    networks:
+      proxy_frontend:
+
+  migration: &migration
+    <<: *django
+    container_name: django_bootstrap_migration
+    command: python manage.py migrate --noinput
+    depends_on: []
+    ports: []
+
+  collectstatic:
+    <<: *migration
+    container_name: django_bootstrap_collectstatic
+    command: python manage.py collectstatic --noinput
+
+  caddy:
+    image: caddy:latest
+    container_name: proxy_frontend
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - django-static:/www/html
+    networks:
+      proxy_frontend:
+    depends_on:
+      api:
+        condition: service_started
+      web:
+        condition: service_started
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: web
+    environment:
+      HOSTNAME: "0.0.0.0"
+      PORT: 3000
+    command: node server.js
+    networks:
+      proxy_frontend:
+
+networks:
+  proxy_frontend:
+volumes:
+  django-static:

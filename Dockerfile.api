@@ -1,0 +1,25 @@
+FROM python:3.10-alpine
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /app
+
+# Set environment variables 
+# Prevents Python from writing pyc files to disk
+ENV PYTHONDONTWRITEBYTECODE=1
+#Prevents Python from buffering stdout and stderr
+ENV PYTHONUNBUFFERED=1 
+
+# Upgrade pip
+RUN pip install --upgrade pip 
+
+COPY ./requirements.txt .
+
+RUN python3 -m pip install --no-cache-dir -r ./requirements.txt
+
+COPY . .
+
+RUN python3
+
+
+EXPOSE 9000
