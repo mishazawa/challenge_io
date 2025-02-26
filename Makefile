@@ -10,4 +10,4 @@ run-ec2:
 cleanup:
 	rm .env.dev
 	rm docker-compose.dev.yml
-	
+	rm Caddyfile.dev

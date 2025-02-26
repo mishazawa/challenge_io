@@ -8,7 +8,7 @@ services:
     container_name: api
     environment:
       SECRET_KEY: /run/secrets/django_secret_prod
-      DEBUG: False
+      DEBUG:
     volumes: # static files for caddy
       - django-static:/var/www
     depends_on:
