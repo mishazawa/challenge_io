@@ -1,0 +1,24 @@
+# 1. Download this service file to /etc/systemd/service/challenge_io.service
+# 2. Enable and start the service template with:
+#    `systemctl enable --now challenge_io.service`
+# 3. Verify service start-up with:
+#    `systemctl status challenge_io.service`
+#    `journalctl --unit challenge_io.service`
+
+[Unit]
+Description=Challenge.io infrastructure service
+Documentation=https://github.com/mishazawa/challenge_io
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+RestartSec=10
+Restart=always
+
+Environment="PROJECT_FOLDER=/home/ec2-user/challenge_io"
+
+# Main process
+ExecStart=docker-compose -f $PROJECT_FOLDER/docker-compose.prod.yml up -d 
+
+[Install]
+WantedBy=multi-user.target
