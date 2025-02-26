@@ -17,16 +17,14 @@
     reverse_proxy web:3000
 }
 
-:80, :443 {
+{$DOMAIN:localhost}:80, {$DOMAIN:localhost}:443 {
     import web
     import static
-    tls internal
 }
 
 
-api.localhost:80, api.localhost:443 {
+api.{$DOMAIN:localhost}:80, api.{$DOMAIN:localhost}:443 {
     import api
     import static
-    tls internal
 }
 

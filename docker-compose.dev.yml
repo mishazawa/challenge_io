@@ -34,6 +34,10 @@ services:
       - ./web/src:/app/src
       - ./web/public:/app/public
 
+  caddy:
+    env_file: ".env.dev"
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
 secrets:
   django_secret_dev:
     external: true
