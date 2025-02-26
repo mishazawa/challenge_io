@@ -9,7 +9,6 @@ services:
       - django-static:/var/www
       - ./api:/app/api
       - ./challenge_io:/app/challenge_io
-      - ./db.sqlite3:/app/db.sqlite3
       - ./manage.py:/app/manage.py
 
   migration: &migration
