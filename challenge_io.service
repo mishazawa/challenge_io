@@ -1,4 +1,4 @@
-# 1. Download this service file to /etc/systemd/service/challenge_io.service
+# 1. Download this service file to /etc/systemd/system/challenge_io.service
 # 2. Enable and start the service template with:
 #    `systemctl enable --now challenge_io.service`
 # 3. Verify service start-up with:
@@ -18,7 +18,7 @@ Restart=always
 Environment="PROJECT_FOLDER=/home/ec2-user/challenge_io"
 
 # Main process
-ExecStart=docker-compose -f $PROJECT_FOLDER/docker-compose.prod.yml up -d 
+ExecStart=docker-compose -f ${PROJECT_FOLDER}/docker-compose.prod.yml up --build
 
 [Install]
 WantedBy=multi-user.target
