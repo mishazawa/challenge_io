@@ -30,6 +30,10 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*." + os.environ.get("DOMAIN"),
+    "localhost",
+]
 
 # Application definition
 
