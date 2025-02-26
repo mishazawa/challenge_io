@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*." + os.environ.get("DOMAIN"),
-    "localhost",
+    "http://*.localhost",
 ]
 
 # Application definition
