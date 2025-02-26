@@ -15,3 +15,5 @@ Caddyfile
 
 README.md
 docker
+
+*.sqlite3

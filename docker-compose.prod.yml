@@ -1,24 +1,21 @@
 services:
   api: &django
+    env_file: .env.prod
     build:
       context: .
-      dockerfile: Dockerfile.api
-    # command: uvicorn challenge_io.asgi:application --reload --proxy-headers --host 0.0.0.0 --port ${PORT} #dev
-    command: uvicorn challenge_io.asgi:application --proxy-headers --host 0.0.0.0 --port ${PORT}
+      dockerfile: ./docker/Dockerfile.api
+    command: uvicorn challenge_io.asgi:application --proxy-headers --host 0.0.0.0 --port 5000
     container_name: api
     environment:
-      SECRET_KEY: ${SECRET_KEY}
-      DJANGO_STATIC_ROOT: ${DJANGO_STATIC_ROOT}
-      DEBUG: ${DEBUG}
-    volumes: # remove in production
-      - ./api:/app/api
-      - ./challenge_io:/app/challenge_io
-      - ./db.sqlite3:/app/db.sqlite3
-      - ./manage.py:/app/manage.py
+      SECRET_KEY: /run/secrets/django_secret_prod
+      DEBUG: False
+    volumes: # static files for caddy
       - django-static:/var/www
     depends_on:
-      - migration
-      - collectstatic
+      migration:
+        condition: service_completed_successfully
+      collectstatic:
+        condition: service_completed_successfully
     networks:
       proxy_frontend:
 
@@ -41,8 +38,8 @@ services:
       - 443:443
       - 80:80
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - django-static:/www/html
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - django-static:/www/html:ro
     networks:
       proxy_frontend:
     depends_on:
@@ -53,13 +50,11 @@ services:
     restart: unless-stopped
 
   web:
+    env_file: .env.prod
     build:
       context: .
-      dockerfile: Dockerfile.web
+      dockerfile: ./docker/Dockerfile.web
     container_name: web
-    environment:
-      HOSTNAME: "0.0.0.0"
-      PORT: 3000
     command: node server.js
     networks:
       proxy_frontend:
@@ -68,3 +63,7 @@ networks:
   proxy_frontend:
 volumes:
   django-static:
+
+secrets:
+  django_secret_prod:
+    external: true

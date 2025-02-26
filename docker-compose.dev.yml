@@ -1,0 +1,39 @@
+services:
+  api: &django
+    env_file: ".env.dev"
+    command: uvicorn challenge_io.asgi:application --reload --proxy-headers --host 0.0.0.0 --port 5000
+    environment:
+      DEBUG: True
+      SECRET_KEY: /run/secrets/django_secret_dev
+    volumes:
+      - django-static:/var/www
+      - ./api:/app/api
+      - ./challenge_io:/app/challenge_io
+      - ./db.sqlite3:/app/db.sqlite3
+      - ./manage.py:/app/manage.py
+
+  migration: &migration
+    <<: *django
+    container_name: django_bootstrap_migration
+    command: python manage.py migrate --noinput
+    depends_on: []
+    ports: []
+
+  collectstatic:
+    <<: *migration
+    container_name: django_bootstrap_collectstatic
+    command: python manage.py collectstatic --noinput
+
+  web:
+    env_file: ".env.dev"
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.web.dev
+    command: npm run dev
+    volumes:
+      - ./web/src:/app/src
+      - ./web/public:/app/public
+
+secrets:
+  django_secret_dev:
+    external: true
