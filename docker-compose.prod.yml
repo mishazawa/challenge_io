@@ -16,6 +16,7 @@ services:
         condition: service_completed_successfully
       collectstatic:
         condition: service_completed_successfully
+    restart: on-failure:3
     networks:
       proxy_frontend:
 
@@ -25,11 +26,13 @@ services:
     command: python manage.py migrate --noinput
     depends_on: []
     ports: []
+    restart: "no"
 
   collectstatic:
     <<: *migration
     container_name: django_bootstrap_collectstatic
     command: python manage.py collectstatic --noinput
+    restart: "no"
 
   caddy:
     image: caddy:latest
@@ -57,6 +60,7 @@ services:
       dockerfile: ./docker/Dockerfile.web
     container_name: web
     command: node server.js
+    restart: on-failure:3
     networks:
       proxy_frontend:
 

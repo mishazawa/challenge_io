@@ -8,6 +8,6 @@ run-ec2:
 	docker-compose -f docker-compose.prod.yml up -d --build
 
 cleanup:
-	rm .env.dev
-	rm docker-compose.dev.yml
-	rm Caddyfile.dev
+	rm -f .env.dev
+	rm -f docker-compose.dev.yml
+	rm -f Caddyfile.dev
