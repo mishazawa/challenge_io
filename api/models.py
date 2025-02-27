@@ -1,22 +1,41 @@
-from django.contrib.auth.models import Group, User
-from rest_framework import permissions, viewsets
+import uuid
+from django.db import models
+from django.contrib.auth.models import AbstractUser
 
-from tutorial.quickstart.serializers import GroupSerializer, UserSerializer
+class User(AbstractUser):
+    pass
 
+class Challenge(models.Model):
+    title = models.CharField(max_length=500)
+    description = models.TextField()
+    
+    created_at = models.DateTimeField(auto_now_add=True)
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    start_date  = models.DateTimeField()
+    end_date    = models.DateTimeField()
 
+    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    participants = models.ManyToManyField(User, through="Participation", related_name='challenges')
 
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all().order_by('name')
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    def __str__(self):
+        return self.title 
+
+class Submission(models.Model):
+    submission_id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    challenge = models.ForeignKey(Challenge, on_delete=models.DO_NOTHING)
+    description = models.TextField()
+    
+    def __str__(self):
+        return f"Submission {self.submission_id} from {self.owner.username} in {self.challenge.title}"
+
+class Participation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} participate {self.challenge.title} since {self.joined_at}"
+
