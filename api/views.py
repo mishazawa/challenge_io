@@ -1,32 +1,37 @@
-from rest_framework import permissions, viewsets, generics
-from .serializers import UserSerializer, ChallengeSerializer, SubmissionSerializer
-from .models import Challenge, User, Submission
+from rest_framework import permissions, generics
+from .serializers import UserShortSerializer, ChallengeSerializer, SubmissionSerializer, ParticipantsSerializer
+from .models import Challenge, User, Submission, Participation
+from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class UserDetailAPIView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserShortSerializer
 
-
-class ChallengeViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows challenges to be viewed or edited.
-    """
-    
-    queryset = Challenge.objects.all().order_by('-created_at')
+class ChallengesListAPIView(generics.ListAPIView):
+    queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
+class ChallengesDetailAPIView(generics.RetrieveAPIView):
+    serializer_class = ChallengeSerializer
 
-class SubmissionViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows submissions to be viewed or edited.
-    """
+    def get_queryset(self):
+        return Challenge.objects.filter(pk=self.kwargs["pk"])
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        return get_object_or_404(queryset)
+
+class ParticipantsListAPIView(generics.ListAPIView):
+    serializer_class = ParticipantsSerializer
+
+    def get_queryset(self):
+        return Participation.objects.filter(challenge=self.kwargs["pk"])
     
-    queryset = Submission.objects.all().order_by('-created_at')
+
+class SubmissionsListAPIView(generics.ListAPIView):
     serializer_class = SubmissionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Submission.objects.filter(challenge=self.kwargs["pk"])
+    

@@ -3,14 +3,12 @@ from rest_framework import serializers
 
 from .models import User, Challenge, Submission, Participation
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserShortSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = [
             'url',
             'username',
-            'email',
-            'groups'
         ]
 
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
@@ -23,9 +21,9 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "description",
         ]
 
-class ChallengeSerializer(serializers.ModelSerializer):
-    participants = UserSerializer(many=True, read_only=True)
-
+class ChallengeSerializer(serializers.HyperlinkedModelSerializer):
+    participants = serializers.HyperlinkedIdentityField(view_name='challenge-participants')
+    submissions = serializers.HyperlinkedIdentityField(view_name='challenge-submissions')
     class Meta:
         model = Challenge
         fields = [
@@ -36,10 +34,25 @@ class ChallengeSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "owner",
+            "url",
             "participants",
+            "submissions",
         ]
 
 
+class ParticipantsSerializer(serializers.HyperlinkedModelSerializer):
+    user = UserShortSerializer(read_only=True)
 
+    class Meta:
+        model = Participation
+        fields = [
+            "joined_at",
+            "user",
+        ]
 
-
+    def to_representation(self, obj):
+        rep = super().to_representation(obj)
+        user = rep.pop('user')
+        for key in user:
+            rep[key] = user[key]
+        return rep
