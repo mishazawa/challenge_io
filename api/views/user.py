@@ -3,10 +3,10 @@ from ..serializers import (
     UserShortSerializer,
 )
 
-from rest_framework import permissions, generics
+from rest_framework import permissions, viewsets
 
 
-class UserDetailAPIView(generics.RetrieveAPIView):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserShortSerializer
     permission_classes = [permissions.IsAuthenticated]
