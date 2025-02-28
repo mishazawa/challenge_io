@@ -1,26 +1,36 @@
-from rest_framework import permissions, generics, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from .serializers import (
-    UserShortSerializer,
+from ..models import Challenge, Submission, Participation
+from ..permissions import IsOwnerOrAdmin
+from ..serializers import (
     ParticipationsSerializer,
     ChallengeSerializer,
     SubmissionSerializer,
     ParticipantsSerializer,
+    ChallengeCreateSerializer,
 )
-from .models import Challenge, User, Submission, Participation
 
-
-class UserDetailAPIView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserShortSerializer
-    permission_classes = [permissions.IsAuthenticated]
+from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class ChallengeViewSet(viewsets.ModelViewSet):
     queryset = Challenge.objects.all()
     serializer_class = ChallengeSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_permissions(self):
+        if self.action in ["update", "partial_update", "destroy"]:
+            return [permissions.IsAuthenticated(), IsOwnerOrAdmin()]
+
+        return [permission() for permission in self.permission_classes]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return ChallengeCreateSerializer
+        return super().get_serializer_class()
 
     @action(
         detail=False, permission_classes=[permissions.IsAuthenticated], url_path="my"

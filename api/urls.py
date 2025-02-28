@@ -1,10 +1,9 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import (
-    UserDetailAPIView,
-    ChallengeViewSet,
-)
+
+from .views.user import UserDetailAPIView
+from .views.challenge import ChallengeViewSet
 
 router = routers.DefaultRouter()
 router.register(r"challenges", ChallengeViewSet, basename="challenge")

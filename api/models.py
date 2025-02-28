@@ -13,8 +13,8 @@ class Challenge(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateField()
+    end_date = models.DateField()
 
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     participants = models.ManyToManyField(
@@ -30,7 +30,7 @@ class Submission(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    challenge = models.ForeignKey(Challenge, on_delete=models.DO_NOTHING)
+    challenge = models.ForeignKey(Challenge, on_delete=models.SET_NULL, null=True)
     description = models.TextField()
 
     def __str__(self):
