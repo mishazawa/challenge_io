@@ -1,5 +1,5 @@
 from ..models import User
-from ..serializers import (
+from ..serializers.user import (
     UserShortSerializer,
 )
 
