@@ -11,3 +11,6 @@ cleanup:
 	rm -f .env.dev
 	rm -f docker-compose.dev.yml
 	rm -f Caddyfile.dev
+
+requrements:
+	uv export --no-hashes --no-dev --format requirements-txt > requirements.txt

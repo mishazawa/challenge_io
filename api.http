@@ -1,0 +1,43 @@
+POST http://api.localhost/user/
+Content-Type: application/json
+
+{"username": "bbb", "password": "bbb"}
+
+###
+
+POST http://api.localhost/auth/
+Content-Type: application/json
+
+{"username": "aaa", "password": "bbb"}
+
+### AUTH ADMIN
+
+POST http://api.localhost/auth/
+Content-Type: application/json
+
+{"username": "admin", "password": "admin"}
+
+
+###
+
+POST http://api.localhost/auth/refresh/
+Content-Type: application/json
+
+{"refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0MDk1NDA5MSwiaWF0IjoxNzQwODY3NjkxLCJqdGkiOiIyZmYxODMwOTM5NjA0NzE2OTNkYTVlYTk0ZDJkMjcwMyIsInVzZXJfaWQiOjF9.fRwTVzhjRc36q97TAY7r23Z1SDgkJG8FdNuCcV4jShg"}
+
+###
+
+
+GET http://api.localhost/user/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQwODY4NDE1LCJpYXQiOjE3NDA4NjgxMTUsImp0aSI6IjFjMDg0MmJlN2IxZTRkN2NiZWQ5ZjAzMDQ4NjNkMzY2IiwidXNlcl9pZCI6M30.4Wx4qH6o9PSwPWHoGP2BuxoyXYIw37iCE_ilvyaHeZA
+
+###
+
+PATCH http://api.localhost/user/1/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQwODY4MjUzLCJpYXQiOjE3NDA4Njc5NTMsImp0aSI6ImE2NzgyZTZjNGQ1NjQ4MmM5MGFhM2UxZmIxYWQ5NTIwIiwidXNlcl9pZCI6MX0.Oj4lswnt-ZyFLt2O2nBtMAk3B7O_j2cata4ySKGlVM8
+
+{
+  "username": "user111"
+}

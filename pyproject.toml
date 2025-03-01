@@ -1,0 +1,21 @@
+[project]
+name = "challenge-io"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "Django",
+  "djangorestframework",
+  "djangorestframework_simplejwt",
+  "uvicorn",
+]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "challenge_io.settings"
+
+[project.optional-dependencies]
+dev = ["mypy"]

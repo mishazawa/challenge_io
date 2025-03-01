@@ -1,5 +1,5 @@
 from ..models import Submission
-from ..permissions import IsOwnerOrAdmin
+from ..permissions import OwnerPermission
 from ..serializers.submission import (
     SubmissionSerializer,
     SubmissionCreateSerializer,
@@ -11,7 +11,7 @@ from rest_framework import permissions, viewsets
 class SubmissionViewSet(viewsets.ModelViewSet):
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated & OwnerPermission]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -20,12 +20,6 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             return SubmissionCreateSerializer
         return super().get_serializer_class()
-
-    def get_permissions(self):
-        if self.action in ["update", "partial_update", "destroy"]:
-            return [permissions.IsAuthenticated(), IsOwnerOrAdmin()]
-
-        return [permission() for permission in self.permission_classes]
 
     def list(self, request):
         qs = self.get_queryset().filter(owner=request.user)

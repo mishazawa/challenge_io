@@ -26,10 +26,12 @@ class ChallengeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_permissions(self):
-        if self.action in ["update", "partial_update", "destroy"]:
-            return [permissions.IsAuthenticated(), IsOwnerOrAdmin()]
+        self.permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-        return [permission() for permission in self.permission_classes]
+        if self.action in ["update", "partial_update", "destroy"]:
+            self.permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

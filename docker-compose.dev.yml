@@ -4,7 +4,6 @@ services:
     command: uvicorn challenge_io.asgi:application --reload --proxy-headers --host 0.0.0.0 --port 5000
     environment:
       DEBUG: True
-      SECRET_KEY: /run/secrets/django_secret_dev
     volumes:
       - django-static:/var/www
       - ./api:/app/api
